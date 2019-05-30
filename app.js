@@ -2,18 +2,17 @@
 const fs = require('fs');
 const readline = require('readline');
 const rs = fs.ReadStream('./popu-pref.csv');
-const rl = readline.createInterface({ 'input' : rs, 'output' : {} });
+const rl = readline.createInterface({ 'input': rs, 'output': {} });
 const prefectureDataMap = new Map();
 
 rl.on('line', (lineString) => {
-    //console.log(lineString);
     const columns = lineString.split(',');
     const year = parseInt(columns[0]);
     const prefecture = columns[2];
     const popu = parseInt(columns[7]);
     if (year === 2010 || year === 2015) {
         let value = prefectureDataMap.get(prefecture);
-        if (!value) {
+        if(!value) {
             value = {
                 popu10: 0,
                 popu15: 0,
@@ -26,10 +25,11 @@ rl.on('line', (lineString) => {
         if (year === 2015) {
             value.popu15 += popu;
         }
-        prefectureDataMap.set(prefecture, value);
-
+        prefectureDataMap.set(prefecture,value);
+        //console.log(prefecture);
+        //console.log(prefectureDataMap);
+        //console.log(value);
     }
-
 });
 rl.resume();
 rl.on('close', () => {
@@ -39,7 +39,7 @@ rl.on('close', () => {
     const rankingArray = Array.from(prefectureDataMap).sort((pair1, pair2) => {
         return pair2[1].change - pair1[1].change;
     });
-    const rankingStrings = rankingArray.map(([key, value]) => { 
+    const rankingStrings = rankingArray.map(([key, value]) => {
         return key + ': ' + value.popu10 + '=>' + value.popu15 + ' 変化率:' + value.change;
     });
     console.log(rankingStrings);
